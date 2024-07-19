@@ -46,7 +46,7 @@ Otherwise, returns NULL (not in map).
 ---
 ### ```const void* map_Iter(Map *m, const void *key)```
 Returns a pointer to the first key if the key is NULL.  
-Returns NULL if the key was the last key.  
+Returns NULL if the key was the last key or not present.  
 Otherwise, returns a pointer to the next key.  
 - ```m``` map returned by map_Init.
 - ```key``` current key iteration.
