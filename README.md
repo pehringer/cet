@@ -9,6 +9,12 @@ Are you looking for a versatile associative array for C? Look no further. This l
   + [```void* map_Set(Map *m, const void *key)```](#void-map_setmap-m-const-void-key)
   + [```const void* map_Get(Map *m, const void *key)```](#const-void-map_getmap-m-const-void-key)
   + [```const void* map_Iter(Map *m, const void *key)```](#const-void-map_itermap-m-const-void-key)
+- Generic (keys and values can be any kind of data)
+- Lightweight (less than XXX lines of source code)
+- Performant (Robin Hood hashing dynamically rearranges keys)
+- Portable (only uses the C standard library)
+  + ```stdlib.h```
+  + ```string.h```
 # Example Code
 # Library Functions
 ---
