@@ -19,9 +19,13 @@ Are you looking for a versatile associative array for C? Look no further. This l
 # Library Functions
 ---
 ### ```Map* map_Init(const size_t key, const size_t val, const size_t cap)```
+Allocates map with specified key-value sizes and capacity.
+- ```key``` size of key type.
+- ```val``` size of value type.
+- ```cap``` capacity of map.
 ---
 ### ```void map_Free(Map *m)```
-Frees map from memory.  
+Deallocates map.  
 - ```m``` map returned by map_Init.
 ---
 ### ```size_t map_Cap(Map *m)```
