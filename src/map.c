@@ -1,11 +1,14 @@
 #include "map.h"
 
 struct Map {
+    char *beg;
     size_t cap;
+    size_t dis;
+    char *end;
     size_t inc;
     size_t key;
     size_t len;
-    size_t val;
+    char *swp;
 };
 
 /*
@@ -19,6 +22,15 @@ ______________________________________________
 
 */
 
+void* memswp(char *des, char *src, size_t len) {
+        for(size_t i = 0; i < len; i++) {
+           des[i] = des[i] ^ src[i];
+           src[i] = des[i] ^ src[i];
+           des[i] = des[i] ^ src[i];
+        }
+    return des;
+}
+
 unsigned long djb2(const char *src, size_t len) {
     unsigned long hsh = 5381;
     for (size_t i = 0; i < len; ++i) {
@@ -28,21 +40,24 @@ unsigned long djb2(const char *src, size_t len) {
 }
 
 Map* map_Init(const size_t key, const size_t val, const size_t cap) {
-    size_t inc = (sizeof(int) + key + val);
+    size_t dis = sizeof(int);
+    size_t inc = dis + key + val;
     Map *m = malloc(sizeof(Map) + (cap + 1) * inc);
     if(m == 0) {
         return 0;
     }
+    m->beg = (char*) (m + 1);
     m->cap = cap;
+    m->dis = dis;
+    m->end = m->beg + cap * inc;
     m->inc = inc;
     m->key = key;
     m->len = 0;
-    m->val = val;
-    int* cur = (int*) (m + 1);
-    int *end = (int*) ((char*) (m + 1) + m->cap * m->inc);
-    while(cur != end) {
-        *cur = -1;
-        cur = (int*) ((char*) cur + m->inc);
+    m->swp = m->end + inc;
+    char* cur = m->beg;
+    while(cur != m->end) {
+        *(int*) cur = -1;
+        cur += m->inc;
     }
     return m;
 }
@@ -60,52 +75,101 @@ size_t map_Len(Map *m) {
 }
 
 void map_Del(Map *m, const void *key) {
+    memset(m->end, 0, m->inc);
+    memcpy(m->end + m->dis, key, m->key);
+    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->inc;
+    while(memcmp(cur + m->dis, m->end + m->dis, m->key) != 0) {
+        if(*(int*) cur < *(int*) m->end) {
+            return;
+        }
+        *(int*) m->end += 1;
+        cur += m->inc;
+        if(cur == m->end) {
+            cur = m->beg;
+        }
+    }
+    memset(cur, 0, m->inc);
+    *(int*) cur = -1;
+    char *nxt = cur + m->inc;
+    if(nxt == m->end) {
+        nxt = m->beg;
+    }
+    while(*(int*) nxt > 0) {
+         memcpy(m->swp, cur, m->inc);
+         memcpy(cur, nxt, m->inc);
+         memcpy(nxt, m->swp, m->inc);
+        *(int*) cur -= 1;
+        cur = nxt;
+        nxt += m->inc;
+        if(nxt == m->end) {
+            nxt = m->beg;
+        }
+    }
+    m->len--;
+    printf("Removed %c:\n", *(char*) key);
+    cur = m->beg;
+    while(cur != m->end) {
+        printf("%d\t%c\t%d\n", *(int*) cur, *(char*) (cur + m->dis), *(int*) (cur + m->dis + m->key));
+        cur += m->inc;
+    }
+    printf("\n");
 }
 
 void* map_Set(Map *m, const void *key) {
-    int *end = (int*) ((char*) (m + 1) + m->cap * m->inc);
-    memset(end, 0, m->inc);
-    memcpy(end + 1, key, m->key);
-    //printf("Hash %d\n", djb2(key, m->key) % m->cap);
-    int *cur = (int*) ((char*) (m + 1) + (djb2(key, m->key) % m->cap) * m->inc);
-    while(*cur >= *end && memcmp(cur + 1, end + 1, m->key) != 0) {
-        //printf("Searching\n");
-        *end += 1;
-        cur = (int*) ((char*) cur + m->inc);
-        if(cur == end) {
-            cur = (int*) (m + 1);
+    memset(m->end, 0, m->inc);
+    memcpy(m->end + m->dis, key, m->key);
+    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->inc;
+    while(*(int*) cur >= *(int*) m->end) {
+        if(memcmp(cur + m->dis, m->end + m->dis, m->key) == 0) {
+            return cur + m->dis + m->key;
         }
-    }
-    int *ret = (int*) ((char*) (cur + 1) + m->key);
-    if(memcmp(cur + 1, end + 1, m->key) == 0) {
-        //printf("Found\n");
-        return ret;
+        *(int*) m->end += 1;
+        cur += m->inc;
+        if(cur == m->end) {
+            cur = m->beg;
+        }
     }
     if(m->len == m->cap) {
-        //printf("Full\n");
         return 0;
     }
-    //printf("Not Found\n");
-    m->len += 1;
+    void *ret = cur + m->dis + m->key;
     do {
-        //printf("Inserting\n");
-        if(*cur < *end) {
-            for(size_t i = 0; i < m->inc; i += 1) {
-               ((char*) cur)[i] = ((char*) cur)[i] ^ ((char*) end)[i];
-               ((char*) end)[i] = ((char*) cur)[i] ^ ((char*) end)[i];
-               ((char*) cur)[i] = ((char*) cur)[i] ^ ((char*) end)[i];
-            }
+        if(*(int*) cur < *(int*) m->end) {
+            memcpy(m->swp, cur, m->inc);
+            memcpy(cur, m->end, m->inc);
+            memcpy(m->end, m->swp, m->inc);
         }
-        *end += 1;
-        cur = (int*) ((char*) cur + m->inc);
-        if(cur == end) {
-            cur = (int*) (m + 1);
+        *(int*) m->end += 1;
+        cur += m->inc;
+        if(cur == m->end) {
+            cur = m->beg;
         }
-    } while(*end > 0);
+    } while(*(int*) m->end > 0);
+    m->len++;
+    printf("Inserted %c (Hash %d):\n", *(char*) key, djb2(key, m->key) % m->cap);
+    cur = m->beg;
+    while(cur != m->end) {
+        printf("%d\t%c\t%d\n", *(int*) cur, *(char*) (cur + m->dis), *(int*) (cur + m->dis + m->key));
+        cur += m->inc;
+    }
+    printf("\n");
     return ret;
 }
 
 const void* map_Get(Map *m, const void *key) {
+    memset(m->end, 0, m->inc);
+    memcpy(m->end + m->dis, key, m->key);
+    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->inc;
+    while(*(int*) cur >= *(int*) m->end) {
+        if(memcmp(cur + m->dis, m->end + m->dis, m->key) == 0) {
+            return cur + m->dis + m->key;
+        }
+        *(int*) m->end += 1;
+        cur += m->inc;
+        if(cur == m->end) {
+            cur = m->beg;
+        }
+    }
     return 0;
 }
 
@@ -115,18 +179,15 @@ const void* map_Iter(Map *m, const void *key) {
 
 void main(void) {
     Map *m = map_Init(sizeof(char), sizeof(int), 6);
-    printf("%ld\n", map_Len(m));
     *(int*)map_Set(m, "A") = 1;
     *(int*)map_Set(m, "B") = 22;
     *(int*)map_Set(m, "C") = 333;
     *(int*)map_Set(m, "G") = 4444;
     *(int*)map_Set(m, "M") = 55555;
     *(int*)map_Set(m, "S") = 666666;
-    printf("S = %d\n", *(int*)map_Set(m, "S"));
-    printf("M = %d\n", *(int*)map_Set(m, "M"));
-    printf("G = %d\n", *(int*)map_Set(m, "G"));
-    printf("C = %d\n", *(int*)map_Set(m, "C"));
-    printf("B = %d\n", *(int*)map_Set(m, "B"));
-    printf("A = %d\n", *(int*)map_Set(m, "A"));
-    printf("%ld\n", map_Len(m));
+    map_Del(m, "G");
+    map_Del(m, "C");
+    *(int*)map_Set(m, "F") = 7777777;
+    *(int*)map_Set(m, "L") = 88888888;
+    map_Del(m, "A");
 }
