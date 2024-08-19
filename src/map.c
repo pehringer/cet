@@ -2,13 +2,12 @@
 
 struct Map {
     char *beg;
+    char *end;
     size_t cap;
     size_t dis;
-    char *end;
-    size_t inc;
+    size_t ele;
     size_t key;
     size_t len;
-    char *swp;
 };
 
 /*
@@ -41,23 +40,22 @@ unsigned long djb2(const char *src, size_t len) {
 
 Map* map_Init(const size_t key, const size_t val, const size_t cap) {
     size_t dis = sizeof(int);
-    size_t inc = dis + key + val;
-    Map *m = malloc(sizeof(Map) + (cap + 1) * inc);
+    size_t ele = dis + key + val;
+    Map *m = malloc(sizeof(Map) + (cap + 1) * ele);
     if(m == 0) {
         return 0;
     }
     m->beg = (char*) (m + 1);
+    m->end = m->beg + cap * ele;
     m->cap = cap;
     m->dis = dis;
-    m->end = m->beg + cap * inc;
-    m->inc = inc;
+    m->ele = ele;
     m->key = key;
     m->len = 0;
-    m->swp = m->end + inc;
     char* cur = m->beg;
     while(cur != m->end) {
         *(int*) cur = -1;
-        cur += m->inc;
+        cur += ele;
     }
     return m;
 }
@@ -75,32 +73,30 @@ size_t map_Len(Map *m) {
 }
 
 void map_Del(Map *m, const void *key) {
-    memset(m->end, 0, m->inc);
+    memset(m->end, 0, m->ele);
     memcpy(m->end + m->dis, key, m->key);
-    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->inc;
+    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->ele;
     while(memcmp(cur + m->dis, m->end + m->dis, m->key) != 0) {
         if(*(int*) cur < *(int*) m->end) {
             return;
         }
         *(int*) m->end += 1;
-        cur += m->inc;
+        cur += m->ele;
         if(cur == m->end) {
             cur = m->beg;
         }
     }
-    memset(cur, 0, m->inc);
+    memset(cur, 0, m->ele);
     *(int*) cur = -1;
-    char *nxt = cur + m->inc;
+    char *nxt = cur + m->ele;
     if(nxt == m->end) {
         nxt = m->beg;
     }
     while(*(int*) nxt > 0) {
-         memcpy(m->swp, cur, m->inc);
-         memcpy(cur, nxt, m->inc);
-         memcpy(nxt, m->swp, m->inc);
+        memswp(cur, nxt, m->ele);
         *(int*) cur -= 1;
         cur = nxt;
-        nxt += m->inc;
+        nxt += m->ele;
         if(nxt == m->end) {
             nxt = m->beg;
         }
@@ -110,21 +106,21 @@ void map_Del(Map *m, const void *key) {
     cur = m->beg;
     while(cur != m->end) {
         printf("%d\t%c\t%d\n", *(int*) cur, *(char*) (cur + m->dis), *(int*) (cur + m->dis + m->key));
-        cur += m->inc;
+        cur += m->ele;
     }
     printf("\n");
 }
 
 void* map_Set(Map *m, const void *key) {
-    memset(m->end, 0, m->inc);
+    memset(m->end, 0, m->ele);
     memcpy(m->end + m->dis, key, m->key);
-    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->inc;
+    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->ele;
     while(*(int*) cur >= *(int*) m->end) {
         if(memcmp(cur + m->dis, m->end + m->dis, m->key) == 0) {
             return cur + m->dis + m->key;
         }
         *(int*) m->end += 1;
-        cur += m->inc;
+        cur += m->ele;
         if(cur == m->end) {
             cur = m->beg;
         }
@@ -135,12 +131,10 @@ void* map_Set(Map *m, const void *key) {
     void *ret = cur + m->dis + m->key;
     do {
         if(*(int*) cur < *(int*) m->end) {
-            memcpy(m->swp, cur, m->inc);
-            memcpy(cur, m->end, m->inc);
-            memcpy(m->end, m->swp, m->inc);
+            memswp(cur, m->end, m->ele);
         }
         *(int*) m->end += 1;
-        cur += m->inc;
+        cur += m->ele;
         if(cur == m->end) {
             cur = m->beg;
         }
@@ -150,22 +144,22 @@ void* map_Set(Map *m, const void *key) {
     cur = m->beg;
     while(cur != m->end) {
         printf("%d\t%c\t%d\n", *(int*) cur, *(char*) (cur + m->dis), *(int*) (cur + m->dis + m->key));
-        cur += m->inc;
+        cur += m->ele;
     }
     printf("\n");
     return ret;
 }
 
 const void* map_Get(Map *m, const void *key) {
-    memset(m->end, 0, m->inc);
+    memset(m->end, 0, m->ele);
     memcpy(m->end + m->dis, key, m->key);
-    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->inc;
+    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->ele;
     while(*(int*) cur >= *(int*) m->end) {
         if(memcmp(cur + m->dis, m->end + m->dis, m->key) == 0) {
             return cur + m->dis + m->key;
         }
         *(int*) m->end += 1;
-        cur += m->inc;
+        cur += m->ele;
         if(cur == m->end) {
             cur = m->beg;
         }
