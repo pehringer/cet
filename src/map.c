@@ -1,13 +1,14 @@
 #include "map.h"
 
-struct Map {
-    char *beg;
+struct Set {
+    size_t capacity;
+    size_t length;
+    size_t size;
+    size_t (*hash)(const void*);
+    int (*compare)(const void*, const void*);
+    char *begin;
     char *end;
-    size_t cap;
-    size_t dis;
-    size_t ele;
-    size_t key;
-    size_t len;
+    char *swap;
 };
 
 /*
@@ -21,23 +22,134 @@ ______________________________________________
 
 */
 
-void* memswp(char *des, char *src, size_t len) {
-        for(size_t i = 0; i < len; i++) {
-           des[i] = des[i] ^ src[i];
-           src[i] = des[i] ^ src[i];
-           des[i] = des[i] ^ src[i];
-        }
-    return des;
-}
-
-unsigned long djb2(const char *src, size_t len) {
-    unsigned long hsh = 5381;
-    for (size_t i = 0; i < len; ++i) {
-        hsh = ((hsh << 5) + hsh) + src[i];
-    }
+size_t djb2(const void *source) {
+    size_t hsh = 5381;
+    hsh = ((hsh << 5) + hsh) + *(char*) source;
     return hsh;
 }
 
+int cmpr(const void *left, const void *right) {
+    return *(char*) left - *(char*) right;
+}
+
+Set* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*)) {
+    Set *s = malloc(sizeof(Set) + (capacity + 2) * (size + 1));
+    if(s == 0) {
+        return 0;
+    }
+    s->capacity = capacity;
+    s->length = 0;
+    s->size = size;
+    s->hash = hash;
+    s->compare = compare;
+    s->begin = (char*) (s + 1);
+    s->end = s->begin + capacity * (size + 1);
+    s->swap = s->end + size + 1;
+    char *ptr = s->begin;
+    while(ptr != s->end) {
+        *ptr = -1;
+        ptr += s->size + 1;
+    }
+    return s;
+}
+
+void set_Destroy(Set *s) {
+    free(s);
+}
+
+size_t set_Capacity(Set *s) {
+    return s->capacity;
+}
+
+size_t set_Length(Set *s) {
+    return s->length;
+}
+
+void set_Remove(Set *s, const void *element) {
+    *s->end = 0;
+    memcpy(s->end + 1, element, s->size);
+    char *ptr = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
+    while(s->compare(ptr + 1, s->end + 1) != 0) {
+        if(*ptr > *s->end) {
+            return;
+        }
+        *s->end += 1;
+        ptr += s->size + 1;
+        if(ptr == s->end) {
+            ptr = s->begin;
+        }
+    }
+    *ptr = -1;
+    char *nxt = ptr + s->size + 1;
+    if(nxt == s->end) {
+        nxt = s->begin;
+    }
+    while(*nxt > 0) {
+        memcpy(ptr, nxt, s->size + 1);
+        *ptr -= 1;
+        *nxt = -1;
+        ptr = nxt;
+        nxt += s->size + 1;
+        if(nxt == s->end) {
+            nxt = s->begin;
+        }
+    }
+    s->length--;
+    printf("Removed %c:\n", *(char*) element);
+    ptr = s->begin;
+    while(ptr != s->end) {
+        printf("%d\t%c\n", *ptr, *(ptr + 1));
+        ptr += s->size + 1;
+    }
+    printf("\n");
+}
+
+void* set_Insert(Set *s, const void *element) {
+    *s->end = 0;
+    memcpy(s->end + 1, element, s->size);
+    char *ptr = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
+    while(*ptr >= *s->end) {
+        if(s->compare(ptr + 1, s->end + 1) == 0) {
+            return ptr + 1;
+        }
+        *s->end += 1;
+        ptr += s->size + 1;
+        if(ptr == s->end) {
+            ptr = s->begin;
+        }
+    }
+    if(s->length == s->capacity) {
+        return 0;
+    }
+    void *ret = ptr + 1;
+    do {
+        if(*ptr < *s->end) {
+            memcpy(s->swap, ptr, s->size + 1);
+            memcpy(ptr, s->end, s->size + 1);
+            memcpy(s->end, s->swap, s->size + 1);
+        }
+        *s->end += 1;
+        ptr += s->size + 1;
+        if(ptr == s->end) {
+            ptr = s->begin;
+        }
+    } while(*s->end > 0);
+    s->length++;
+    printf("Inserted %c (Hash %d):\n", *(char*) element, s->hash(element) % s->capacity);
+    ptr = s->begin;
+    while(ptr != s->end) {
+        printf("%d\t%c\t%d\n", *ptr, *(ptr + 1));
+        ptr += s->size + 1;
+    }
+    printf("\n");
+    return ret;
+}
+
+
+
+
+
+/*
 Map* map_Init(const size_t key, const size_t val, const size_t cap) {
     size_t dis = sizeof(int);
     size_t ele = dis + key + val;
@@ -171,17 +283,20 @@ const void* map_Iter(Map *m, const void *key) {
     return 0;
 }
 
+*/
+
+
 void main(void) {
-    Map *m = map_Init(sizeof(char), sizeof(int), 6);
-    *(int*)map_Set(m, "A") = 1;
-    *(int*)map_Set(m, "B") = 22;
-    *(int*)map_Set(m, "C") = 333;
-    *(int*)map_Set(m, "G") = 4444;
-    *(int*)map_Set(m, "M") = 55555;
-    *(int*)map_Set(m, "S") = 666666;
-    map_Del(m, "G");
-    map_Del(m, "C");
-    *(int*)map_Set(m, "F") = 7777777;
-    *(int*)map_Set(m, "L") = 88888888;
-    map_Del(m, "A");
+    Set *s = set_Create(6, sizeof(char), djb2, cmpr);
+    set_Insert(s, "A");
+    set_Insert(s, "B");
+    set_Insert(s, "C");
+    set_Insert(s, "G");
+    set_Insert(s, "M");
+    set_Insert(s, "S");
+    set_Remove(s, "G");
+    set_Remove(s, "C");
+    set_Insert(s, "F");
+    set_Insert(s, "L");
+    set_Remove(s, "A");
 }
