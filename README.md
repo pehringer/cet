@@ -38,10 +38,11 @@ Returns the total number of elements.
 Returns the current number of elements being used.  
 - ```s``` set returned by set_Create.
 ---
-### ```void set_Remove(Set *s, const void *element)```
-Removes the element if the element is present.  
+### ```const void* set_Contains(Set *s, const void *element)```
+Returns a pointer to the element if the element is present.  
+Otherwise, returns NULL (not in set).  
 - ```s``` set returned by set_Create.
-- ```element``` element to remove.
+- ```element``` key to lookup.
 ---
 ### ```void* set_Insert(Set *s, const void *element)```
 Inserts the element if the element is not present.  
@@ -50,11 +51,10 @@ Otherwise, returns a pointer to the element.
 - ```s``` set returned by set_Create.
 - ```element``` element to insert.
 ---
-### ```const void* set_Contains(Set *s, const void *element)```
-Returns a pointer to the element if the element is present.  
-Otherwise, returns NULL (not in set).  
+### ```void set_Remove(Set *s, const void *element)```
+Removes the element if the element is present.  
 - ```s``` set returned by set_Create.
-- ```element``` key to lookup.
+- ```element``` element to remove.
 ---
 ### ```const void* set_Iterate(Set *s, const void *element)```
 Returns a pointer to the first element if the element is NULL.  

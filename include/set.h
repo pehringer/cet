@@ -15,11 +15,11 @@ size_t set_Capacity(Set *s);
 
 size_t set_Length(Set *s);
 
-void set_Remove(Set *s, const void *element);
+const void* set_Contains(Set *s, const void *element);
 
 void* set_Insert(Set *s, const void *element);
 
-const void* set_Contains(Set *s, const void *element);
+void set_Remove(Set *s, const void *element);
 
 const void* set_Iterate(Set *s, const void *element);
 

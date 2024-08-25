@@ -8,17 +8,21 @@ struct Set {
     int (*compare)(const void*, const void*);
     char *begin;
     char *end;
-    char *swap;
+    char *target;
 };
+
+const unsigned char EMPTY_ELEMENT = 0;
+const unsigned char MIN_DISTANCE = 1;
+const unsigned char MAX_DISTANCE = 255;
 
 /*
 
- Header   Data                      Swap
-|--------|-------------------------|---------|
-______________________________________________
-| MAP    | ELEMENT | ... | ELEMENT | ELEMENT |
-| STRUCT | 0       |     | N       | END     |
-|________|_________|_____|_________|_________|
+ Header   Data                      Swap      Traversal
+|--------|-------------------------|---------|---------|
+________________________________________________________
+| MAP    | ELEMENT | ... | ELEMENT | ELEMENT | ELEMENT |
+| STRUCT | 0       |     | N       | END     | TARGET  |
+|________|_________|_____|_________|_________|_________|
 
 */
 
@@ -44,11 +48,11 @@ Set* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (
     s->compare = compare;
     s->begin = (char*) (s + 1);
     s->end = s->begin + capacity * (size + 1);
-    s->swap = s->end + size + 1;
-    char *ptr = s->begin;
-    while(ptr != s->end) {
-        *ptr = -1;
-        ptr += s->size + 1;
+    s->target = s->end + size + 1;
+    char *i = s->begin;
+    while(i != s->end) {
+        *i = EMPTY_ELEMENT;
+        i += s->size + 1;
     }
     return s;
 }
@@ -65,226 +69,118 @@ size_t set_Length(Set *s) {
     return s->length;
 }
 
-void set_Remove(Set *s, const void *element) {
-    *s->end = 0;
-    memcpy(s->end + 1, element, s->size);
-    char *ptr = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
-    while(s->compare(ptr + 1, s->end + 1) != 0) {
-        if(*ptr > *s->end) {
-            return;
+const void* set_Contains(Set *s, const void *element) {
+    *s->target = MIN_DISTANCE;
+    memcpy(s->target + 1, element, s->size);
+    char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
+    while(1) {
+        if(*s->target > *i) {
+            break;
         }
-        *s->end += 1;
-        ptr += s->size + 1;
-        if(ptr == s->end) {
-            ptr = s->begin;
+        if(s->compare(s->target + 1, i + 1) == 0) {
+            return i + 1;
         }
-    }
-    *ptr = -1;
-    char *nxt = ptr + s->size + 1;
-    if(nxt == s->end) {
-        nxt = s->begin;
-    }
-    while(*nxt > 0) {
-        memcpy(ptr, nxt, s->size + 1);
-        *ptr -= 1;
-        *nxt = -1;
-        ptr = nxt;
-        nxt += s->size + 1;
-        if(nxt == s->end) {
-            nxt = s->begin;
+        *s->target += 1;
+        i += s->size + 1;
+        if(i == s->end) {
+            i = s->begin;
         }
     }
-    s->length--;
-    printf("Removed %c:\n", *(char*) element);
-    ptr = s->begin;
-    while(ptr != s->end) {
-        printf("%d\t%c\n", *ptr, *(ptr + 1));
-        ptr += s->size + 1;
-    }
-    printf("\n");
+    return 0;
 }
 
 void* set_Insert(Set *s, const void *element) {
-    *s->end = 0;
-    memcpy(s->end + 1, element, s->size);
-    char *ptr = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
-    while(*ptr >= *s->end) {
-        if(s->compare(ptr + 1, s->end + 1) == 0) {
-            return ptr + 1;
+    *s->target = MIN_DISTANCE;
+    memcpy(s->target + 1, element, s->size);
+    char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
+    while(1) {
+        if(*s->target == MAX_DISTANCE) {
+            return 0;
         }
-        *s->end += 1;
-        ptr += s->size + 1;
-        if(ptr == s->end) {
-            ptr = s->begin;
+        if(*s->target > *i) {
+            break;
+        }
+        if(s->compare(s->target + 1, i + 1) == 0) {
+            return i + 1;
+        }
+        *s->target += 1;
+        i += s->size + 1;
+        if(i == s->end) {
+            i = s->begin;
         }
     }
     if(s->length == s->capacity) {
         return 0;
     }
-    void *ret = ptr + 1;
-    do {
-        if(*ptr < *s->end) {
-            memcpy(s->swap, ptr, s->size + 1);
-            memcpy(ptr, s->end, s->size + 1);
-            memcpy(s->end, s->swap, s->size + 1);
+    void *j = i + 1;
+    while(1) {
+        if(*s->target > *i) {
+            memcpy(s->end, i, s->size + 1);
+            memcpy(i, s->target, s->size + 1);
+            memcpy(s->target, s->end, s->size + 1);
         }
-        *s->end += 1;
-        ptr += s->size + 1;
-        if(ptr == s->end) {
-            ptr = s->begin;
+        if(*s->target == EMPTY_ELEMENT) {
+            break;
         }
-    } while(*s->end > 0);
+        *s->target += 1;
+        i += s->size + 1;
+        if(i == s->end) {
+            i = s->begin;
+        }
+    }
     s->length++;
-    printf("Inserted %c (Hash %d):\n", *(char*) element, s->hash(element) % s->capacity);
-    ptr = s->begin;
-    while(ptr != s->end) {
-        printf("%d\t%c\t%d\n", *ptr, *(ptr + 1));
-        ptr += s->size + 1;
-    }
-    printf("\n");
-    return ret;
+    //printf("Inserted %c (Hash %d):\n", *(char*) element, s->hash(element) % s->capacity);
+    //i = s->begin;
+    //while(i != s->end) {
+    //    printf("%d\t%c\t%d\n", *i, *(i + 1));
+    //    i += s->size + 1;
+    //}
+    //printf("\n");
+    return j;
 }
 
-
-
-
-
-/*
-Map* map_Init(const size_t key, const size_t val, const size_t cap) {
-    size_t dis = sizeof(int);
-    size_t ele = dis + key + val;
-    Map *m = malloc(sizeof(Map) + (cap + 1) * ele);
-    if(m == 0) {
-        return 0;
-    }
-    m->beg = (char*) (m + 1);
-    m->end = m->beg + cap * ele;
-    m->cap = cap;
-    m->dis = dis;
-    m->ele = ele;
-    m->key = key;
-    m->len = 0;
-    char* cur = m->beg;
-    while(cur != m->end) {
-        *(int*) cur = -1;
-        cur += ele;
-    }
-    return m;
-}
-
-void map_Free(Map *m) {
-    free(m);
-}
-
-size_t map_Cap(Map *m) {
-    return m->cap;
-}
-
-size_t map_Len(Map *m) {
-    return m->len;
-}
-
-void map_Del(Map *m, const void *key) {
-    memset(m->end, 0, m->ele);
-    memcpy(m->end + m->dis, key, m->key);
-    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->ele;
-    while(memcmp(cur + m->dis, m->end + m->dis, m->key) != 0) {
-        if(*(int*) cur < *(int*) m->end) {
+void set_Remove(Set *s, const void *element) {
+    *s->target = MIN_DISTANCE;
+    memcpy(s->target + 1, element, s->size);
+    char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
+    while(1) {
+        if(*s->target > *i) {
             return;
         }
-        *(int*) m->end += 1;
-        cur += m->ele;
-        if(cur == m->end) {
-            cur = m->beg;
+        if(s->compare(s->target + 1, i + 1) == 0) {
+            break;
+        }
+        *s->target += 1;
+        i += s->size + 1;
+        if(i == s->end) {
+            i = s->begin;
         }
     }
-    memset(cur, 0, m->ele);
-    *(int*) cur = -1;
-    char *nxt = cur + m->ele;
-    if(nxt == m->end) {
-        nxt = m->beg;
-    }
-    while(*(int*) nxt > 0) {
-        memswp(cur, nxt, m->ele);
-        *(int*) cur -= 1;
-        cur = nxt;
-        nxt += m->ele;
-        if(nxt == m->end) {
-            nxt = m->beg;
+    *i = EMPTY_ELEMENT;
+    char *j = i;
+    while(1) {
+        j += s->size + 1;
+        if(j == s->end) {
+            j = s->begin;
         }
+        if(*j <= MIN_DISTANCE) {
+            break;
+        }
+        memcpy(s->end, i, s->size + 1);
+        memcpy(i, j, s->size + 1);
+        memcpy(j, s->end, s->size + 1);
+        *i -= 1;
+        i = j;
     }
-    m->len--;
-    printf("Removed %c:\n", *(char*) key);
-    cur = m->beg;
-    while(cur != m->end) {
-        printf("%d\t%c\t%d\n", *(int*) cur, *(char*) (cur + m->dis), *(int*) (cur + m->dis + m->key));
-        cur += m->ele;
-    }
-    printf("\n");
+    s->length--;
+    //printf("Removed %c:\n", *(char*) element);
+    //i = s->begin;
+    //while(i != s->end) {
+    //    printf("%d\t%c\n", *i, *(i + 1));
+    //    i += s->size + 1;
+    //}
+    //printf("\n");
 }
-
-void* map_Set(Map *m, const void *key) {
-    memset(m->end, 0, m->ele);
-    memcpy(m->end + m->dis, key, m->key);
-    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->ele;
-    while(*(int*) cur >= *(int*) m->end) {
-        if(memcmp(cur + m->dis, m->end + m->dis, m->key) == 0) {
-            return cur + m->dis + m->key;
-        }
-        *(int*) m->end += 1;
-        cur += m->ele;
-        if(cur == m->end) {
-            cur = m->beg;
-        }
-    }
-    if(m->len == m->cap) {
-        return 0;
-    }
-    void *ret = cur + m->dis + m->key;
-    do {
-        if(*(int*) cur < *(int*) m->end) {
-            memswp(cur, m->end, m->ele);
-        }
-        *(int*) m->end += 1;
-        cur += m->ele;
-        if(cur == m->end) {
-            cur = m->beg;
-        }
-    } while(*(int*) m->end > 0);
-    m->len++;
-    printf("Inserted %c (Hash %d):\n", *(char*) key, djb2(key, m->key) % m->cap);
-    cur = m->beg;
-    while(cur != m->end) {
-        printf("%d\t%c\t%d\n", *(int*) cur, *(char*) (cur + m->dis), *(int*) (cur + m->dis + m->key));
-        cur += m->ele;
-    }
-    printf("\n");
-    return ret;
-}
-
-const void* map_Get(Map *m, const void *key) {
-    memset(m->end, 0, m->ele);
-    memcpy(m->end + m->dis, key, m->key);
-    char *cur = m->beg + (djb2(key, m->key) % m->cap) * m->ele;
-    while(*(int*) cur >= *(int*) m->end) {
-        if(memcmp(cur + m->dis, m->end + m->dis, m->key) == 0) {
-            return cur + m->dis + m->key;
-        }
-        *(int*) m->end += 1;
-        cur += m->ele;
-        if(cur == m->end) {
-            cur = m->beg;
-        }
-    }
-    return 0;
-}
-
-const void* map_Iter(Map *m, const void *key) {
-    return 0;
-}
-
-*/
-
 
 void main(void) {
     Set *s = set_Create(6, sizeof(char), djb2, cmpr);
@@ -299,4 +195,22 @@ void main(void) {
     set_Insert(s, "F");
     set_Insert(s, "L");
     set_Remove(s, "A");
+    const char *r = set_Contains(s, "A");
+    if(r) printf("found: %c\n", *r); else printf("missing: A\n");
+    r = set_Contains(s, "B");
+    if(r) printf("found: %c\n", *r); else printf("missing: B\n");
+    r = set_Contains(s, "C");
+    if(r) printf("found: %c\n", *r); else printf("missing: C\n");
+    r = set_Contains(s, "D");
+    if(r) printf("found: %c\n", *r); else printf("missing: D\n");
+    r = set_Contains(s, "E");
+    if(r) printf("found: %c\n", *r); else printf("missing: E\n");
+    r = set_Contains(s, "F");
+    if(r) printf("found: %c\n", *r); else printf("missing: F\n");
+    r = set_Contains(s, "L");
+    if(r) printf("found: %c\n", *r); else printf("missing: L\n");
+    r = set_Contains(s, "M");
+    if(r) printf("found: %c\n", *r); else printf("missing: M\n");
+    r = set_Contains(s, "S");
+    if(r) printf("found: %c\n", *r); else printf("missing: S\n");
 }
