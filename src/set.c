@@ -1,6 +1,6 @@
 #include "set.h"
 
-struct Set {
+struct set_t {
     size_t capacity;
     size_t length;
     size_t size;
@@ -36,8 +36,8 @@ int cmpr(const void *left, const void *right) {
     return *(char*) left - *(char*) right;
 }
 
-Set* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*)) {
-    Set *s = malloc(sizeof(Set) + (capacity + 2) * (size + 1));
+set_t* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*)) {
+    set_t *s = malloc(sizeof(set_t) + (capacity + 2) * (size + 1));
     if(s == 0) {
         return 0;
     }
@@ -57,19 +57,19 @@ Set* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (
     return s;
 }
 
-void set_Destroy(Set *s) {
+void set_Destroy(set_t *s) {
     free(s);
 }
 
-size_t set_Capacity(Set *s) {
+size_t set_Capacity(set_t *s) {
     return s->capacity;
 }
 
-size_t set_Length(Set *s) {
+size_t set_Length(set_t *s) {
     return s->length;
 }
 
-const void* set_Contains(Set *s, const void *element) {
+const void* set_Contains(set_t *s, const void *element) {
     *s->target = MIN_DISTANCE;
     memcpy(s->target + 1, element, s->size);
     char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
@@ -89,7 +89,7 @@ const void* set_Contains(Set *s, const void *element) {
     return 0;
 }
 
-void* set_Insert(Set *s, const void *element) {
+void* set_Insert(set_t *s, const void *element) {
     *s->target = MIN_DISTANCE;
     memcpy(s->target + 1, element, s->size);
     char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
@@ -139,7 +139,7 @@ void* set_Insert(Set *s, const void *element) {
     return j;
 }
 
-void set_Remove(Set *s, const void *element) {
+void set_Remove(set_t *s, const void *element) {
     *s->target = MIN_DISTANCE;
     memcpy(s->target + 1, element, s->size);
     char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
@@ -183,7 +183,7 @@ void set_Remove(Set *s, const void *element) {
 }
 
 void main(void) {
-    Set *s = set_Create(6, sizeof(char), djb2, cmpr);
+    set_t *s = set_Create(6, sizeof(char), djb2, cmpr);
     set_Insert(s, "A");
     set_Insert(s, "B");
     set_Insert(s, "C");
