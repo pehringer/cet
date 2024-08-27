@@ -6,9 +6,9 @@ struct set_t {
     size_t size;
     size_t (*hash)(const void*);
     int (*compare)(const void*, const void*);
-    char *begin;
-    char *end;
-    char *target;
+    unsigned char *begin;
+    unsigned char *end;
+    unsigned char *target;
 };
 
 const unsigned char EMPTY_ELEMENT = 0;
@@ -46,10 +46,10 @@ set_t* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int
     s->size = size;
     s->hash = hash;
     s->compare = compare;
-    s->begin = (char*) (s + 1);
+    s->begin = (unsigned char*) (s + 1);
     s->end = s->begin + capacity * (size + 1);
     s->target = s->end + size + 1;
-    char *i = s->begin;
+    unsigned char *i = s->begin;
     while(i != s->end) {
         *i = EMPTY_ELEMENT;
         i += s->size + 1;
@@ -72,7 +72,7 @@ size_t set_Length(set_t *s) {
 const void* set_Contains(set_t *s, const void *element) {
     *s->target = MIN_DISTANCE;
     memcpy(s->target + 1, element, s->size);
-    char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
+    unsigned char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
     while(1) {
         if(*s->target > *i) {
             break;
@@ -92,7 +92,7 @@ const void* set_Contains(set_t *s, const void *element) {
 void* set_Insert(set_t *s, const void *element) {
     *s->target = MIN_DISTANCE;
     memcpy(s->target + 1, element, s->size);
-    char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
+    unsigned char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
     while(1) {
         if(*s->target == MAX_DISTANCE) {
             return 0;
@@ -142,7 +142,7 @@ void* set_Insert(set_t *s, const void *element) {
 void set_Remove(set_t *s, const void *element) {
     *s->target = MIN_DISTANCE;
     memcpy(s->target + 1, element, s->size);
-    char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
+    unsigned char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
     while(1) {
         if(*s->target > *i) {
             return;
@@ -157,7 +157,7 @@ void set_Remove(set_t *s, const void *element) {
         }
     }
     *i = EMPTY_ELEMENT;
-    char *j = i;
+    unsigned char *j = i;
     while(1) {
         j += s->size + 1;
         if(j == s->end) {
