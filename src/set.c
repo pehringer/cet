@@ -114,13 +114,13 @@ void* set_Insert(set_t *s, const void *element) {
     *i = d;
     memcpy(i + 1, element, s->size);
     s->length++;
-    printf("Inserted %c (Hash %d):\n", *(char*) element, s->hash(element) % s->capacity);
-    j = s->begin;
-    while(j != s->end) {
-        printf("%d\t%c\n", *j, *(j + 1));
-        j += s->size + 1;
-    }
-    printf("\n");
+    //printf("Inserted %c (Hash %d):\n", *(char*) element, s->hash(element) % s->capacity);
+    //j = s->begin;
+    //while(j != s->end) {
+    //    printf("%d\t%c\n", *j, *(j + 1));
+    //    j += s->size + 1;
+    //}
+    //printf("\n");
     return i + 1;
 }
 
@@ -155,13 +155,13 @@ void set_Remove(set_t *s, const void *element) {
     }
     memset(i, EMPTY_ELEMENT, s->size + 1);
     s->length--;
-    printf("Removed %c:\n", *(char*) element);
-    i = s->begin;
-    while(i != s->end) {
-        printf("%d\t%c\n", *i, *(i + 1));
-        i += s->size + 1;
-    }
-    printf("\n");
+    //printf("Removed %c:\n", *(char*) element);
+    //i = s->begin;
+    //while(i != s->end) {
+    //    printf("%d\t%c\n", *i, *(i + 1));
+    //    i += s->size + 1;
+    //}
+    //printf("\n");
 }
 
 const void* set_Iterate(set_t *s, const void *element) {
@@ -191,159 +191,4 @@ const void* set_Iterate(set_t *s, const void *element) {
         i += s->size + 1;
     }
     return 0;
-}
-
-void main(void) {
-    const char *i = 0;
-    set_t *s = set_Create(6, sizeof(char), djb2, cmpr);
-
-
-    set_Insert(s, "A");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Insert(s, "B");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Insert(s, "C");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Insert(s, "G");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Insert(s, "M");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Insert(s, "S");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Remove(s, "G");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Remove(s, "C");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Insert(s, "F");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Insert(s, "L");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Remove(s, "A");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Remove(s, "B");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Remove(s, "S");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Remove(s, "F");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Remove(s, "L");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    set_Remove(s, "M");
-    i = 0;
-    while((i = set_Iterate(s, i))) {
-        printf("iteration: %c\n", *i);
-    }
-    printf("\n");
-
-
-    const char *r = set_Contains(s, "A");
-    if(r) printf("found: %c\n", *r); else printf("missing: A\n");
-    r = set_Contains(s, "B");
-    if(r) printf("found: %c\n", *r); else printf("missing: B\n");
-    r = set_Contains(s, "C");
-    if(r) printf("found: %c\n", *r); else printf("missing: C\n");
-    r = set_Contains(s, "D");
-    if(r) printf("found: %c\n", *r); else printf("missing: D\n");
-    r = set_Contains(s, "E");
-    if(r) printf("found: %c\n", *r); else printf("missing: E\n");
-    r = set_Contains(s, "F");
-    if(r) printf("found: %c\n", *r); else printf("missing: F\n");
-    r = set_Contains(s, "G");
-    if(r) printf("found: %c\n", *r); else printf("missing: G\n");
-    r = set_Contains(s, "L");
-    if(r) printf("found: %c\n", *r); else printf("missing: L\n");
-    r = set_Contains(s, "M");
-    if(r) printf("found: %c\n", *r); else printf("missing: M\n");
-    r = set_Contains(s, "S");
-    if(r) printf("found: %c\n", *r); else printf("missing: S\n");
 }
