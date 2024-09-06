@@ -20,8 +20,8 @@ Are you looking for a versatile set implementation written in C? Look no further
 ---
 ### ```set_t* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*))```
 Allocates set with specified element size and capacity.  
-- ```capacity``` capacity of set.
-- ```size``` size of element type.
+- ```capacity``` capacity of set. Non zero value.
+- ```size``` size of element type. Non zero value.
 - ```hash``` hashes element. Returns hash of element.
 - ```compare``` compares elements. Returns zero if equal, otherwise non zero.
 
@@ -42,19 +42,19 @@ Returns the current number of elements being used in the set.
 Returns a pointer to the element in the set if the element is present.  
 Otherwise, returns NULL (not in set).  
 - ```s``` set returned by set_Create.
-- ```element``` key to lookup.
+- ```element``` key to lookup. Non null value.
 ---
 ### ```void* set_Insert(set_t *s, const void *element)```
 Inserts the element into the set if the element is not present.  
 Returns NULL if the insert fails (set is too full).  
 Otherwise, returns a pointer to the element in the set.  
 - ```s``` set returned by set_Create.
-- ```element``` element to insert.
+- ```element``` element to insert. Non null value.
 ---
 ### ```void set_Remove(set_t *s, const void *element)```
 Removes the element in the set if the element is present.  
 - ```s``` set returned by set_Create.
-- ```element``` element to remove.
+- ```element``` element to remove. Non null value.
 ---
 ### ```const void* set_Iterate(set_t *s, const void *element)```
 Returns a pointer to the first element in the set if the element is NULL.  

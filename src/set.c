@@ -25,16 +25,6 @@ ______________________________________________
 
 */
 
-size_t djb2(const void *source) {
-    size_t hsh = 5381;
-    hsh = ((hsh << 5) + hsh) + *(char*) source;
-    return hsh;
-}
-
-int cmpr(const void *left, const void *right) {
-    return *(char*) left - *(char*) right;
-}
-
 set_t* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*)) {
     set_t *s = malloc(sizeof(set_t) + (capacity + 1) * (size + 1));
     if(s == 0) {
@@ -155,10 +145,10 @@ void set_Remove(set_t *s, const void *element) {
     }
     memset(i, EMPTY_ELEMENT, s->size + 1);
     s->length--;
-    //printf("Removed %c:\n", *(char*) element);
+    //printf("Removed %d:\n", *(int*) element);
     //i = s->begin;
     //while(i != s->end) {
-    //    printf("%d\t%c\n", *i, *(i + 1));
+    //    printf("%d\t%d\n", *i, *(int*) (i + 1));
     //    i += s->size + 1;
     //}
     //printf("\n");
