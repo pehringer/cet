@@ -1,5 +1,9 @@
 # ***set***
-Are you looking for a versatile set implementation written in C? Look no further. This library offers a hash table that utilizes Robin Hood hashing, a technique that dynamically rearranges elements to keep them close to their ideal hash locations, resulting in a fast and reliable set.
+Are you looking for a versatile set implementation written in C?
+Look no further.
+This library offers a hash table that utilizes Robin Hood hashing,
+a technique that dynamically rearranges elements to keep them close to their ideal hash locations,
+resulting in a fast and reliable set.
 - Easy to use (library only has eight functions)
   + [```set_t* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*))```](#set_t-set_createsize_t-capacity-size_t-size-size_t-hashconst-void-int-compareconst-void-const-void)
   + [```void set_Destroy(set_t *s)```](#void-set_destroyset_t-s)
@@ -87,6 +91,13 @@ A = { d  a  b  c }
 B = { d  e  f  c }
 A \ B = { a  b }
 rm ./difference.bin
+```
+---
+Custom hash/comapare functions combined with set_Contsins/set_Insert funstions returning pointers to set elements allows for the set to function as a map.
+For example character counting using a map:
+```
+```
+```
 ```
 ---
 # Library Functions
