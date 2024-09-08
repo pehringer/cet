@@ -10,7 +10,7 @@ Are you looking for a versatile set implementation written in C? Look no further
   + [```void set_Remove(set_t *s, const void *element)```](#void-set_removeset_t-s-const-void-element)
   + [```const void* set_Iterate(set_t *s, const void *element)```](#const-void-set_iterateset_t-s-const-void-element)
 - Generic (can hold any kind of data)
-- Lightweight (less than XXX lines of source code)
+- Lightweight (less than 175 lines of source code)
 - Performant (Robin Hood hashing dynamically rearranges elements)
 - Portable (only uses the C standard library)
   + ```stdlib.h```
