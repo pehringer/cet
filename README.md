@@ -16,6 +16,79 @@ Are you looking for a versatile set implementation written in C? Look no further
   + ```stdlib.h```
   + ```string.h```
 # Example Code
+---
+Compute set union:
+```
+set_t* setUnion(set_t *a, set_t *b) {
+    set_t *c = set_Create(set_Length(a) + set_Length(b), sizeof(char), charHash, charCompare);
+    const char *i = 0;
+    while(i = set_Iterate(a, i)) {
+        set_Insert(c, i);
+    }
+    while(i = set_Iterate(b, i)) {
+        set_Insert(c, i);
+    }
+    return c;
+}
+```
+```
+set$ make union
+gcc -fPIC -shared -I ./include ./src/set.c -o ./set.so
+gcc -I ./include ./set.so ./examples/union.c -o ./union.bin
+./union.bin
+A = { d  a  b  c }
+B = { d  e  f  c }
+A u B = { a  b  c  d  e  f }
+rm ./union.bin
+```
+---
+Compute set intersection:
+```
+set_t* setIntersection(set_t *a, set_t *b) {
+    set_t *c = set_Create(set_Length(a), sizeof(char), charHash, charCompare);
+    const char *i = 0;
+    while(i = set_Iterate(a, i)) {
+        if(set_Contains(b, i)) {
+            set_Insert(c, i);
+        }
+    }
+    return c;
+}
+```
+```
+set$ make intersection
+gcc -fPIC -shared -I ./include ./src/set.c -o ./set.so
+gcc -I ./include ./set.so ./examples/intersection.c -o ./intersection.bin
+./intersection.bin
+A = { d  a  b  c }
+B = { d  e  f  c }
+A n B = { d  c }
+rm ./intersection.bin
+```
+---
+Compute set difference:
+```
+set_t* setDifference(set_t *a, set_t *b) {
+    const char *i = 0;
+    while(i = set_Iterate(b, i)) {
+        if(set_Contains(a, i)) {
+            set_Remove(a, i);
+        }
+    }
+    return a;
+}
+```
+```
+set$ make difference 
+gcc -fPIC -shared -I ./include ./src/set.c -o ./set.so
+gcc -I ./include ./set.so ./examples/difference.c -o ./difference.bin
+./difference.bin
+A = { d  a  b  c }
+B = { d  e  f  c }
+A \ B = { a  b }
+rm ./difference.bin
+```
+---
 # Library Functions
 ---
 ### ```set_t* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*))```
