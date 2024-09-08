@@ -93,11 +93,70 @@ A \ B = { a  b }
 rm ./difference.bin
 ```
 ---
-Custom hash/comapare functions combined with set_Contsins/set_Insert funstions returning pointers to set elements allows for the set to function as a map.
-For example character counting using a map:
+Custom hash/comapare functions combined with set_Contsins/set_Insert returning pointers to set elements allows the set to function as a map.
+For example character counting using a map (set holding key-value pairs):
+```
+typedef struct pair {
+    char key;
+    int value;
+} pair;
+
+size_t pairHash(const void *p) {
+    return ((const pair*) p)->key;
+}
+
+int pairCompare(const void *l, const void *r) {
+    return ((const pair*) l)->key - ((const pair*) r)->key;
+}
+
+void charaterCount(const char *string) {
+    set_t *m = set_Create(1024, sizeof(pair), pairHash, pairCompare);
+    while(*string) {
+        pair k = {*string, 0};
+        pair *p = set_Insert(m, &k);
+        p->value++;
+        string++;
+    }
+    const pair *i = 0;
+    while(i = set_Iterate(m, i)) {
+        printf("Key: '%c' Value: %d\n", i->key, i->value);
+    }
+}
 ```
 ```
-```
+set$ make map
+gcc -fPIC -shared -I ./include ./src/set.c -o ./set.so
+gcc -I ./include ./set.so ./examples/map.c -o ./map.bin
+./map.bin
+"the quick brown fox jumps over the lazy dog"
+Key: ' ' Value: 8
+Key: 'a' Value: 1
+Key: 'b' Value: 1
+Key: 'c' Value: 1
+Key: 'd' Value: 1
+Key: 'e' Value: 3
+Key: 'f' Value: 1
+Key: 'g' Value: 1
+Key: 'h' Value: 2
+Key: 'i' Value: 1
+Key: 'j' Value: 1
+Key: 'k' Value: 1
+Key: 'l' Value: 1
+Key: 'm' Value: 1
+Key: 'n' Value: 1
+Key: 'o' Value: 4
+Key: 'p' Value: 1
+Key: 'q' Value: 1
+Key: 'r' Value: 2
+Key: 's' Value: 1
+Key: 't' Value: 2
+Key: 'u' Value: 2
+Key: 'v' Value: 1
+Key: 'w' Value: 1
+Key: 'x' Value: 1
+Key: 'y' Value: 1
+Key: 'z' Value: 1
+rm ./map.bin
 ```
 ---
 # Library Functions

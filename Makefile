@@ -20,3 +20,8 @@ difference: build
 	gcc -I ./include ./set.so ./examples/difference.c -o ./difference.bin
 	./difference.bin
 	rm ./difference.bin
+
+map: build
+	gcc -I ./include ./set.so ./examples/map.c -o ./map.bin
+	./map.bin
+	rm ./map.bin
