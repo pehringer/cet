@@ -104,13 +104,6 @@ void* set_Insert(set_t *s, const void *element) {
     *i = d;
     memcpy(i + 1, element, s->size);
     s->length++;
-    //printf("Inserted %c (Hash %d):\n", *(char*) element, s->hash(element) % s->capacity);
-    //j = s->begin;
-    //while(j != s->end) {
-    //    printf("%d\t%c\n", *j, *(j + 1));
-    //    j += s->size + 1;
-    //}
-    //printf("\n");
     return i + 1;
 }
 
@@ -145,13 +138,6 @@ void set_Remove(set_t *s, const void *element) {
     }
     memset(i, EMPTY_ELEMENT, s->size + 1);
     s->length--;
-    //printf("Removed %d:\n", *(int*) element);
-    //i = s->begin;
-    //while(i != s->end) {
-    //    printf("%d\t%d\n", *i, *(int*) (i + 1));
-    //    i += s->size + 1;
-    //}
-    //printf("\n");
 }
 
 const void* set_Iterate(set_t *s, const void *element) {
