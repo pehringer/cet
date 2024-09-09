@@ -118,6 +118,7 @@ void charaterCount(const char *string) {
         string++;
     }
     const pair *i = 0;
+    printf("Unique Characters: %d\n", set_Length(m));
     while(i = set_Iterate(m, i)) {
         printf("Key: '%c' Value: %d\n", i->key, i->value);
     }
@@ -129,6 +130,7 @@ gcc -fPIC -shared -I ./include ./src/set.c -o ./set.so
 gcc -I ./include ./set.so ./examples/map.c -o ./map.bin
 ./map.bin
 "the quick brown fox jumps over the lazy dog"
+Unique Characters: 27
 Key: ' ' Value: 8
 Key: 'a' Value: 1
 Key: 'b' Value: 1

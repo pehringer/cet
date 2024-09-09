@@ -23,6 +23,7 @@ void charaterCount(const char *string) {
         string++;
     }
     const pair *i = 0;
+    printf("Unique Characters: %d\n", set_Length(m));
     while(i = set_Iterate(m, i)) {
         printf("Key: '%c' Value: %d\n", i->key, i->value);
     }
