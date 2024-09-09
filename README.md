@@ -93,7 +93,7 @@ A \ B = { a  b }
 rm ./difference.bin
 ```
 ---
-Custom hash/comapare functions combined with set_Contsins/set_Insert returning pointers to set elements allows the set to function as a map.
+Custom hash/comapare functions combined with set_Contains/set_Insert returning pointers to set elements allows the set to function as a map.
 For example character counting using a map (set holding key-value pairs):
 ```
 typedef struct pair {
