@@ -187,7 +187,7 @@ Returns the current number of elements being used in the set.
 Returns a pointer to the element in the set if the element is present.  
 Otherwise, returns NULL (not in set).  
 - ```s``` set returned by set_Create. Non null value.
-- ```element``` key to lookup. Non null value.
+- ```element``` element to lookup. Non null value.
 ---
 ### ```void* set_Insert(set_t *s, const void *element)```
 Inserts the element into the set if the element is not present.  
