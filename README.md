@@ -36,7 +36,7 @@ cet_t* setUnion(cet_t *a, cet_t *b) {
 }
 ```
 ```
-set$ make union
+cet$ make union
 gcc -fPIC -shared -I ./include ./src/cet.c -o ./cet.so
 gcc -I ./include ./cet.so ./examples/union.c -o ./union.bin
 ./union.bin
@@ -60,7 +60,7 @@ cet_t* setIntersection(cet_t *a, cet_t *b) {
 }
 ```
 ```
-set$ make intersection
+cet$ make intersection
 gcc -fPIC -shared -I ./include ./src/cet.c -o ./cet.so
 gcc -I ./include ./cet.so ./examples/intersection.c -o ./intersection.bin
 ./intersection.bin
@@ -83,7 +83,7 @@ cet_t* setDifference(cet_t *a, cet_t *b) {
 }
 ```
 ```
-set$ make difference 
+cet$ make difference 
 gcc -fPIC -shared -I ./include ./src/cet.c -o ./cet.so
 gcc -I ./include ./cet.so ./examples/difference.c -o ./difference.bin
 ./difference.bin
@@ -125,7 +125,7 @@ void charaterCount(const char *string) {
 }
 ```
 ```
-set$ make map
+cet$ make map
 gcc -fPIC -shared -I ./include ./src/cet.c -o ./cet.so
 gcc -I ./include ./cet.so ./examples/map.c -o ./map.bin
 ./map.bin
