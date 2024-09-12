@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "set.h"
+#include "cet.h"
 
 typedef struct pair {
     char key;
@@ -15,16 +15,16 @@ int pairCompare(const void *l, const void *r) {
 }
 
 void charaterCount(const char *string) {
-    set_t *m = set_Create(1024, sizeof(pair), pairHash, pairCompare);
+    cet_t *m = cet_Create(1024, sizeof(pair), pairHash, pairCompare);
     while(*string) {
         pair k = {*string, 0};
-        pair *p = set_Insert(m, &k);
+        pair *p = cet_Insert(m, &k);
         p->value++;
         string++;
     }
     const pair *i = 0;
-    printf("Unique Characters: %d\n", set_Length(m));
-    while(i = set_Iterate(m, i)) {
+    printf("Unique Characters: %d\n", cet_Length(m));
+    while(i = cet_Iterate(m, i)) {
         printf("Key: '%c' Value: %d\n", i->key, i->value);
     }
 }

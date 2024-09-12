@@ -1,6 +1,6 @@
-#include "set.h"
+#include "cet.h"
 
-struct set_t {
+struct cet_t {
     size_t capacity;
     size_t length;
     size_t size;
@@ -19,14 +19,14 @@ const unsigned char MAX_DISTANCE = 255;
  header   begin                     end
 |--------|-------------------------|---------|
 ______________________________________________
-| set_t  | element | ... | element | element |
+| cet_t  | element | ... | element | element |
 | struct | 0       |     | n       | swap    |
 |________|_________|_____|_________|_________|
 
 */
 
-set_t* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*)) {
-    set_t *s = malloc(sizeof(set_t) + (capacity + 1) * (size + 1));
+cet_t* cet_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*)) {
+    cet_t *s = malloc(sizeof(cet_t) + (capacity + 1) * (size + 1));
     if(s == 0) {
         return 0;
     }
@@ -41,19 +41,19 @@ set_t* set_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int
     return s;
 }
 
-void set_Destroy(set_t *s) {
+void cet_Destroy(cet_t *s) {
     free(s);
 }
 
-size_t set_Capacity(set_t *s) {
+size_t cet_Capacity(cet_t *s) {
     return s->capacity;
 }
 
-size_t set_Length(set_t *s) {
+size_t cet_Length(cet_t *s) {
     return s->length;
 }
 
-const void* set_Contains(set_t *s, const void *element) {
+const void* cet_Contains(cet_t *s, const void *element) {
     unsigned char d = MIN_DISTANCE;
     unsigned char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
     while(d <= *i) {
@@ -69,20 +69,20 @@ const void* set_Contains(set_t *s, const void *element) {
     return 0;
 }
 
-void* set_Insert(set_t *s, const void *element) {
-    unsigned char d = MIN_DISTANCE;
+void* cet_Insert(cet_t *s, const void *element) {
+    unsigned char distance = MIN_DISTANCE;
     unsigned char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
-    while(d <= *i) {
+    while(distance <= *i) {
         if(s->compare(element, i + 1) == 0) {
             return i + 1;
         }
-        d += 1;
+        distance += 1;
         i += s->size + 1;
         if(i >= s->end) {
             i = s->begin;
         }
     }
-    if(d == MAX_DISTANCE) {
+    if(distance == MAX_DISTANCE) {
         return 0;
     }
     if(s->length == s->capacity) {
@@ -101,25 +101,25 @@ void* set_Insert(set_t *s, const void *element) {
             memcpy(i, s->end, s->size + 1);
         }
     }
-    *i = d;
+    *i = distance;
     memcpy(i + 1, element, s->size);
     s->length++;
     return i + 1;
 }
 
-void set_Remove(set_t *s, const void *element) {
-    unsigned char d = MIN_DISTANCE;
+void cet_Remove(cet_t *s, const void *element) {
+    unsigned char distance = MIN_DISTANCE;
     unsigned char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
-    if(d > *i) {
+    if(distance > *i) {
         return;
     }
     while(s->compare(element, i + 1) != 0) {
-        d += 1;
+        distance += 1;
         i += s->size + 1;
         if(i >= s->end) {
             i = s->begin;
         }
-        if(d > *i) {
+        if(distance > *i) {
             return;
         }
     }
@@ -140,21 +140,21 @@ void set_Remove(set_t *s, const void *element) {
     s->length--;
 }
 
-const void* set_Iterate(set_t *s, const void *element) {
-    unsigned char d = MIN_DISTANCE;
+const void* cet_Iterate(cet_t *s, const void *element) {
+    unsigned char distance = MIN_DISTANCE;
     unsigned char *i = s->begin;
     if(element != 0) {
         i += (s->hash(element) % s->capacity) * (s->size + 1);
     }
     while(element != 0) {
-        if(d > *i) {
+        if(distance > *i) {
             return 0;
         }
         if(s->compare(element, i + 1) == 0) {
             i += s->size + 1;
             break;
         }
-        d += 1;
+        distance += 1;
         i += s->size + 1;
         if(i >= s->end) {
             i = s->begin;
