@@ -186,13 +186,8 @@ Returns the current number of elements being used in the set.
 ### ```const void* cet_Contains(cet_t *s, const void *element)```
 Returns a pointer to the element in the set if the element is present.  
 Otherwise, returns NULL (not in set).  
-<<<<<<< HEAD
-- ```s``` set returned by cet_Create. Non null value.
-- ```element``` key to lookup. Non null value.
-=======
 - ```s``` set returned by set_Create. Non null value.
 - ```element``` element to lookup. Non null value.
->>>>>>> d0eb47db8bc1d1a9d5b7208510680d5b4b0ac231
 ---
 ### ```void* cet_Insert(cet_t *s, const void *element)```
 Inserts the element into the set if the element is not present.  
