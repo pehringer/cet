@@ -1,4 +1,4 @@
-# ***cet***
+# ***cet*** - ***C*** s***ET***
 Are you looking for a versatile set implementation written in C?
 Look no further.
 This library offers a hash table that utilizes Robin Hood hashing,
