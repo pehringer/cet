@@ -12,7 +12,7 @@ struct cet_t {
 
 const unsigned char EMPTY_ELEMENT = 0;
 const unsigned char MIN_DISTANCE = 1;
-const unsigned char MAX_DISTANCE = 255;
+const unsigned char MAX_DISTANCE = UCHAR_MAX;
 
 /*
 

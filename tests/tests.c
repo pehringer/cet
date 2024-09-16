@@ -642,9 +642,9 @@ size_t intHashZero(const void *i) {
 int maximum_distance(void) {
     int i;
     const int *p;
-    cet_t *s = cet_Create(256, sizeof(int), intHashZero, intCompare);
+    cet_t *s = cet_Create(UCHAR_MAX + 1, sizeof(int), intHashZero, intCompare);
     if(s == 0) return 1;
-    for(int n = 1; n < 255; n++) {
+    for(int n = 1; n < UCHAR_MAX; n++) {
         if((p = cet_Insert(s, &n)) == 0 || *p != n) return 2;
         if(cet_Capacity(s) != 256) return 3;
         if(cet_Length(s) != n) return 4;

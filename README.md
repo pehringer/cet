@@ -17,6 +17,7 @@ resulting in a fast and reliable set.
 - Lightweight (less than 175 lines of source code)
 - Performant (Robin Hood hashing dynamically rearranges elements)
 - Portable (only uses the C standard library)
+  + ```limits.h```
   + ```stdlib.h```
   + ```string.h```
 # Example Code

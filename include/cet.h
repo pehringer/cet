@@ -1,6 +1,7 @@
 #ifndef CET_H
 #define CET_H
 
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 
