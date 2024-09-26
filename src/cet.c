@@ -54,13 +54,13 @@ size_t cet_Length(cet_t *s) {
 }
 
 const void* cet_Contains(cet_t *s, const void *element) {
-    unsigned char d = MIN_DISTANCE;
+    unsigned char distance = MIN_DISTANCE;
     unsigned char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
-    while(d <= *i) {
+    while(distance <= *i) {
         if(s->compare(element, i + 1) == 0) {
             return i + 1;
         }
-        d += 1;
+        distance++;
         i += s->size + 1;
         if(i >= s->end) {
             i = s->begin;
@@ -76,7 +76,7 @@ void* cet_Insert(cet_t *s, const void *element) {
         if(s->compare(element, i + 1) == 0) {
             return i + 1;
         }
-        distance += 1;
+        distance++;
         i += s->size + 1;
         if(i >= s->end) {
             i = s->begin;
@@ -90,7 +90,7 @@ void* cet_Insert(cet_t *s, const void *element) {
     }
     unsigned char *j = i;
     while(*i != EMPTY_ELEMENT) {
-        *i += 1;
+        (*i)++;
         j += s->size + 1;
         if(j >= s->end) {
             j = s->begin;
@@ -114,7 +114,7 @@ void cet_Remove(cet_t *s, const void *element) {
         return;
     }
     while(s->compare(element, i + 1) != 0) {
-        distance += 1;
+        distance++;
         i += s->size + 1;
         if(i >= s->end) {
             i = s->begin;
@@ -129,7 +129,7 @@ void cet_Remove(cet_t *s, const void *element) {
     }
     while(*j > MIN_DISTANCE) {
         memcpy(i, j, s->size + 1);
-        *i -= 1;
+        (*i)--;
         i = j;
         j += s->size + 1;
         if(j >= s->end) {
@@ -154,7 +154,7 @@ const void* cet_Iterate(cet_t *s, const void *element) {
             i += s->size + 1;
             break;
         }
-        distance += 1;
+        distance++;
         i += s->size + 1;
         if(i >= s->end) {
             i = s->begin;
