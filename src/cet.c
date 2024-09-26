@@ -103,7 +103,7 @@ void* cet_Insert(cet_t *s, const void *element) {
     }
     *i = distance;
     memcpy(i + 1, element, s->size);
-    s->length++;
+    (s->length)++;
     return i + 1;
 }
 
@@ -137,7 +137,7 @@ void cet_Remove(cet_t *s, const void *element) {
         }
     }
     memset(i, EMPTY_ELEMENT, s->size + 1);
-    s->length--;
+    (s->length)--;
 }
 
 const void* cet_Iterate(cet_t *s, const void *element) {
