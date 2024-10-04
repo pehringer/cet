@@ -1,5 +1,28 @@
 #include "cet.h"
 
+/*
+
+Cet memory layout:
+
+          cet_t.begin                cet_t.end
+         /                          /
+_____________________________________________
+| cet_t | element | ... | element | element |
+|       | 0       |     | n       | swap    |
+|_______|_________|_____|_________|_________|
+
+
+element memory layout:
+
+  distance   data
+ /          /
+_______________________
+| unsigned | unsigned |
+| char     | char(s)  |
+|__________|__________|
+
+*/
+
 struct cet_t {
     size_t capacity;
     size_t length;
@@ -13,17 +36,6 @@ struct cet_t {
 const unsigned char EMPTY_ELEMENT = 0;
 const unsigned char MIN_DISTANCE = 1;
 const unsigned char MAX_DISTANCE = UCHAR_MAX;
-
-/*
-
- header   begin                     end
-|--------|-------------------------|---------|
-______________________________________________
-| cet_t  | element | ... | element | element |
-| struct | 0       |     | n       | swap    |
-|________|_________|_____|_________|_________|
-
-*/
 
 cet_t* cet_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*)) {
     cet_t *s = malloc(sizeof(cet_t) + (capacity + 1) * (size + 1));
