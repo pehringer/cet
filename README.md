@@ -198,7 +198,7 @@ Otherwise, returns a pointer to the element in the set.
 - ```element``` element to insert. Non null value.
 ---
 ### ```void cet_Remove(cet_t *s, const void *element)```
-Removes the element in the set if the element is present.  
+Removes the element from the set if the element is present.  
 - ```s``` set returned by cet_Create. Non null value.
 - ```element``` element to remove. Non null value.
 ---
