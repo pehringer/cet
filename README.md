@@ -185,26 +185,26 @@ Returns the current number of elements being used in the set.
 - ```s``` set returned by cet_Create. Non null value.
 ---
 ### ```const void* cet_Contains(cet_t *s, const void *element)```
-Returns a pointer to the element in the set if the element is present.  
+Returns a pointer to the element within the set if the ```element``` is present.  
 Otherwise, returns NULL (not in set).  
 - ```s``` set returned by cet_Create. Non null value.
 - ```element``` element to lookup. Non null value.
 ---
 ### ```void* cet_Insert(cet_t *s, const void *element)```
-Inserts the element into the set if the element is not present.  
+Inserts the ```element``` into the set if the ```element``` is not present.  
 Returns NULL if the insert fails (set is too full).  
-Otherwise, returns a pointer to the element in the set.  
+Otherwise, returns a pointer to the element within the set.  
 - ```s``` set returned by cet_Create. Non null value.
 - ```element``` element to insert. Non null value.
 ---
 ### ```void cet_Remove(cet_t *s, const void *element)```
-Removes the element from the set if the element is present.  
+Removes the element from set if the ```element``` is present.  
 - ```s``` set returned by cet_Create. Non null value.
 - ```element``` element to remove. Non null value.
 ---
 ### ```const void* cet_Iterate(cet_t *s, const void *element)```
-Returns a pointer to the first element in the set if the element is NULL.  
-Returns NULL if the element was the last element in the set or not present.  
+Returns a pointer to the first element in the set if the ```element``` is NULL.  
+Returns NULL if the ```element``` was the last element in the set or not present.  
 Otherwise, returns a pointer to the next element in the set.  
 - ```s``` set returned by cet_Create. Non null value.
 - ```element``` current element iteration.
