@@ -4,12 +4,12 @@
 
 Cet memory layout:
 
-          cet_t.begin                cet_t.end
-         /                          /
-_____________________________________________
-| cet_t | element | ... | element | element |
-|       | 0       |     | n       | swap    |
-|_______|_________|_____|_________|_________|
+          cet_t.begin         cet_t.end
+         /                   /
+____________________________________
+| cet_t | slot | ... | slot | slot |
+|       | 0    |     | n    | swap |
+|_______|______|_____|______|______|
 
 
 element memory layout:
@@ -66,53 +66,69 @@ size_t cet_Length(cet_t *s) {
 }
 
 const void* cet_Contains(cet_t *s, const void *element) {
+    // Compute initial position from hash.
     unsigned char distance = MIN_DISTANCE;
     unsigned char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
+    // Search until a slot with a smaller distance is encountered.
     while(distance <= *i) {
+        // Slot contains the element.
         if(s->compare(element, i + 1) == 0) {
             return i + 1;
         }
+        // Move to the next slot and update distance.
         distance++;
         i += s->size + 1;
         if(i >= s->end) {
             i = s->begin;
         }
     }
+    // Element not found.
     return 0;
 }
 
 void* cet_Insert(cet_t *s, const void *element) {
+    // Compute initial position from hash.
     unsigned char distance = MIN_DISTANCE;
     unsigned char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
+    // Search until a slot with a smaller distance is encountered.
     while(distance <= *i) {
+        // Slot contains the element.
         if(s->compare(element, i + 1) == 0) {
             return i + 1;
         }
+        // Move to the next slot and update distance.
         distance++;
         i += s->size + 1;
         if(i >= s->end) {
             i = s->begin;
         }
     }
+    // Slot is too far away from the initial position.
     if(distance == MAX_DISTANCE) {
         return 0;
     }
+    // There are no empty slots.
     if(s->length == s->capacity) {
         return 0;
     }
+    // Maintain Robin Hood ordering.
+    // Shift slots rightward until a empty slot is encountered
     unsigned char *j = i;
     while(*i != EMPTY_ELEMENT) {
+        // Move to the next slot and update distance.
         (*i)++;
         j += s->size + 1;
         if(j >= s->end) {
             j = s->begin;
         }
+        // Swap if the slot has a smaller distance.
         if(*i > *j) {
             memcpy(s->end, j, s->size + 1);
             memcpy(j, i, s->size + 1);
             memcpy(i, s->end, s->size + 1);
         }
     }
+    // Insert the element into its Robin Hood slot position.
     *i = distance;
     memcpy(i + 1, element, s->size);
     (s->length)++;
@@ -120,34 +136,45 @@ void* cet_Insert(cet_t *s, const void *element) {
 }
 
 void cet_Remove(cet_t *s, const void *element) {
+    // Compute initial position from hash.
     unsigned char distance = MIN_DISTANCE;
     unsigned char *i = s->begin + (s->hash(element) % s->capacity) * (s->size + 1);
+    // Slot has a smaller distance.
     if(distance > *i) {
         return;
     }
+    // Search until a slot containing the element is encountered.
     while(s->compare(element, i + 1) != 0) {
+        // Move to the next slot and update distance.
         distance++;
         i += s->size + 1;
         if(i >= s->end) {
             i = s->begin;
         }
+        // Slot has a smaller distance.
         if(distance > *i) {
             return;
         }
     }
+    // Maintain Robin Hood ordering.
+    // Get the next slot for shifting leftward.
     unsigned char *j = i + s->size + 1;
     if(j >= s->end) {
         j = s->begin;
     }
+    // Shift slots leftward until a empty or in place slot is encountered.
     while(*j > MIN_DISTANCE) {
+	// Shift slot and update its distance.
         memcpy(i, j, s->size + 1);
         (*i)--;
+        // Move to the next slot.
         i = j;
         j += s->size + 1;
         if(j >= s->end) {
             j = s->begin;
         }
     }
+    // Mark last shifted slot as empty.
     memset(i, EMPTY_ELEMENT, s->size + 1);
     (s->length)--;
 }
