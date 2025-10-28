@@ -165,23 +165,22 @@ rm ./map.bin
 # Library Functions
 ---
 ### ```cet_t* cet_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*))```
-Allocates set with specified element size and capacity.  
+Allocates set with specified element size and capacity.
 - ```capacity``` capacity of set. Non zero value.
 - ```size``` size of element type. Non zero value.
 - ```hash``` hashes element. Returns hash of element.
 - ```compare``` compares elements. Returns zero if equal, otherwise non zero.
-
 ---
 ### ```void cet_Destroy(cet_t *s)```
-Deallocates set.  
+Deallocates set.
 - ```s``` set returned by cet_Create. Non null value.
 ---
 ### ```size_t cet_Capacity(cet_t *s)```
-Returns the total number of elements in the set.  
+Returns the total number of elements in the set.
 - ```s``` set returned by cet_Create. Non null value.
 ---
 ### ```size_t cet_Length(cet_t *s)```
-Returns the current number of elements being used in the set.  
+Returns the current number of elements being used in the set.
 - ```s``` set returned by cet_Create. Non null value.
 ---
 ### ```const void* cet_Contains(cet_t *s, const void *element)```
