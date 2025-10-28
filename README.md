@@ -231,8 +231,8 @@ Otherwise, returns a pointer to the next element in the set.
   + If the current slot’s key matches the key, begin a backward-shift deletion from the next slot:
     * Loop:
       - If the next slot’s key is empty, set the current slot’s key to empty and its distance to 0, then return.
-      - If the next slot’s distance is equal to 0, set the current slot’s key to empty and its distance to 0, then return.
+      - If the next slot’s distance is 0, set the current slot’s key to empty and its distance to 0, then return.
       - Shift the next slot backward into the current slot and decrement its distance by 1.
       - Move to the next slot.
-  + If the current distance is greater than the current slot’s distance, the key cannot be present → return.
+  + If the current distance is greater than the current slot’s distance, the key cannot be present, return.
   + Move to the next slot and increment distance by 1.
