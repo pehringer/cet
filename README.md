@@ -1,7 +1,7 @@
 # ***cet*** - ***C*** s***ET***
 Are you looking for a versatile set implementation written in C?
 Look no further.
-This library offers a hash table that utilizes Robin Hood hashing,
+This library offers a hash table that utilizes [Robin Hood hashing](#robin-hood-algorithm),
 a technique that dynamically rearranges elements to keep them close to their ideal hash locations,
 resulting in a fast and reliable set.
 - Easy to use (library only has eight functions)
@@ -209,3 +209,30 @@ Otherwise, returns a pointer to the next element in the set.
 - ```s``` set returned by cet_Create. Non null value.
 - ```element``` current element iteration.
 ---
+# Robin Hood Algorithm
+### Contains:
+- Start from the key’s hashed slot with a distance of 0.
+- Loop:
+  + If the current slot’s key is empty, the key cannot be in the table, return false.
+  + If the current slot’s key matches the key, return true.
+  + If the current distance is greater than the current slot’s distance, the key cannot appear later, return false.
+  + Move to the next slot and increment distance by 1.
+### Insert:
+- Start from the key’s hashed slot with a distance of 0.
+- Loop:
+  + If the current slot’s key is empty, fill it with the key and distance, return.
+  + If the current slot’s key matches the key, it’s a duplicate, return.
+  + If the current distance is greater than the current slot’s distance, swap the key and distance with the slot’s key and distance (Robin Hood step).
+  + Move to the next slot and increment distance by 1.
+### Remove:
+- Start from the key’s hashed slot with a distance of 0.
+- Loop:
+  + If the current slot’s key is empty, the key cannot be in the table, return.
+  + If the current slot’s key matches the key, begin a backward-shift deletion from the next slot:
+    * Loop:
+      - If the next slot’s key is empty, set the current slot’s key to empty and its distance to 0, then return.
+      - If the next slot’s distance is equal to 0, set the current slot’s key to empty and its distance to 0, then return.
+      - Shift the next slot backward into the current slot and decrement its distance by 1.
+      - Move to the next slot.
+  + If the current distance is greater than the current slot’s distance, the key cannot be present → return.
+  + Move to the next slot and increment distance by 1.
