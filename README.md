@@ -6,13 +6,13 @@ a technique that dynamically rearranges elements to keep them close to their ide
 resulting in a fast and reliable set.
 - Easy to use (library only has eight functions)
   + [```cet_t* cet_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*))```](#cet_t-cet_createsize_t-capacity-size_t-size-size_t-hashconst-void-int-compareconst-void-const-void)
-  + [```void cet_Destroy(cet_t *s)```](#void-cet_destroycet_t-s)
-  + [```size_t cet_Capacity(cet_t *s)```](#size_t-cet_capacitycet_t-s)
-  + [```size_t cet_Length(cet_t *s)```](#size_t-cet_lengthcet_t-s)
-  + [```const void* cet_Contains(cet_t *s, const void *element)```](#const-void-cet_containscet_t-s-const-void-element)
-  + [```void* cet_Insert(cet_t *s, const void *element)```](#void-cet_insertcet_t-s-const-void-element)
-  + [```void cet_Remove(cet_t *s, const void *element)```](#void-cet_removecet_t-s-const-void-element)
-  + [```const void* cet_Iterate(cet_t *s, const void *element)```](#const-void-cet_iteratecet_t-s-const-void-element)
+  + [```void cet_Destroy(cet_t *p)```](#void-cet_destroycet_t-p)
+  + [```size_t cet_Capacity(cet_t *p)```](#size_t-cet_capacitycet_t-p)
+  + [```size_t cet_Length(cet_t *p)```](#size_t-cet_lengthcet_t-p)
+  + [```const void* cet_Contains(cet_t *p, const void *element)```](#const-void-cet_containscet_t-p-const-void-element)
+  + [```void* cet_Insert(cet_t *p, const void *element)```](#void-cet_insertcet_t-p-const-void-element)
+  + [```void cet_Remove(cet_t *p, const void *element)```](#void-cet_removecet_t-p-const-void-element)
+  + [```const void* cet_Iterate(cet_t *p, const void *element)```](#const-void-cet_iteratecet_t-p-const-void-element)
 - Generic (can hold any kind of data)
 - Lightweight (less than 175 lines of source code)
 - Performant (Robin Hood hashing dynamically rearranges elements)
@@ -171,41 +171,41 @@ Allocates set with specified element size and capacity.
 - ```hash``` hashes element. Returns hash of element.
 - ```compare``` compares elements. Returns zero if equal, otherwise non zero.
 ---
-### ```void cet_Destroy(cet_t *s)```
+### ```void cet_Destroy(cet_t *p)```
 Deallocates set.
-- ```s``` set returned by cet_Create. Non null value.
+- ```p``` set returned by cet_Create. Non null value.
 ---
-### ```size_t cet_Capacity(cet_t *s)```
+### ```size_t cet_Capacity(cet_t *p)```
 Returns the total number of elements in the set.
-- ```s``` set returned by cet_Create. Non null value.
+- ```p``` set returned by cet_Create. Non null value.
 ---
-### ```size_t cet_Length(cet_t *s)```
+### ```size_t cet_Length(cet_t *p)```
 Returns the current number of elements being used in the set.
-- ```s``` set returned by cet_Create. Non null value.
+- ```p``` set returned by cet_Create. Non null value.
 ---
-### ```const void* cet_Contains(cet_t *s, const void *element)```
+### ```const void* cet_Contains(cet_t *p, const void *element)```
 Returns a pointer to the element within the set if the ```element``` is present.  
 Otherwise, returns NULL (not in set).  
-- ```s``` set returned by cet_Create. Non null value.
+- ```p``` set returned by cet_Create. Non null value.
 - ```element``` element to lookup. Non null value.
 ---
-### ```void* cet_Insert(cet_t *s, const void *element)```
+### ```void* cet_Insert(cet_t *p, const void *element)```
 Inserts the ```element``` into the set if the ```element``` is not present.  
 Returns NULL if the insert fails (set is too full).  
 Otherwise, returns a pointer to the element within the set.  
-- ```s``` set returned by cet_Create. Non null value.
+- ```p``` set returned by cet_Create. Non null value.
 - ```element``` element to insert. Non null value.
 ---
-### ```void cet_Remove(cet_t *s, const void *element)```
+### ```void cet_Remove(cet_t *p, const void *element)```
 Removes the element from set if the ```element``` is present.  
-- ```s``` set returned by cet_Create. Non null value.
+- ```p``` set returned by cet_Create. Non null value.
 - ```element``` element to remove. Non null value.
 ---
-### ```const void* cet_Iterate(cet_t *s, const void *element)```
+### ```const void* cet_Iterate(cet_t *p, const void *element)```
 Returns a pointer to the first element in the set if the ```element``` is NULL.  
 Returns NULL if the ```element``` was the last element in the set or not present.  
 Otherwise, returns a pointer to the next element in the set.  
-- ```s``` set returned by cet_Create. Non null value.
+- ```p``` set returned by cet_Create. Non null value.
 - ```element``` current element iteration.
 ---
 # Robin Hood Algorithm
