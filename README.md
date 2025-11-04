@@ -194,7 +194,7 @@ Otherwise, returns NULL (not in set).
 - ```element``` element to lookup. Non null value.
 ---
 ### ```const void* cet_Insert(cet_t *p, const void *element)```
-Inserts the ```element``` into the set if the ```element``` is not present.
+Inserts the ```element``` into the set if the ```element``` is not present.  
 Updates the element in the set with ```element``` if the ```element``` is present.  
 Returns NULL if the insert fails (set is too full).  
 Otherwise, returns a pointer to the element within the set.  
