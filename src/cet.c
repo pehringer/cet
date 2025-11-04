@@ -86,7 +86,7 @@ const void* cet_Contains(cet_t *p, const void *element) {
     return 0;
 }
 
-void* cet_Insert(cet_t *p, const void *element) {
+const void* cet_Insert(cet_t *p, const void *element) {
     // Compute initial position from hash.
     unsigned char distance = MIN_DISTANCE;
     unsigned char *i = p->begin + (p->hash(element) % p->capacity) * (p->size + 1);
@@ -94,6 +94,7 @@ void* cet_Insert(cet_t *p, const void *element) {
     while(distance <= *i) {
         // Slot contains the element.
         if(p->compare(element, i + 1) == 0) {
+            memcpy(i + 1, element, p->size);
             return i + 1;
         }
         // Move to the next slot and update distance.

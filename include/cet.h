@@ -17,7 +17,7 @@ size_t cet_Length(cet_t *p);
 
 const void* cet_Contains(cet_t *p, const void *element);
 
-void* cet_Insert(cet_t *p, const void *element);
+const void* cet_Insert(cet_t *p, const void *element);
 
 void cet_Remove(cet_t *p, const void *element);
 

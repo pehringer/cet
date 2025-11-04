@@ -10,11 +10,11 @@ resulting in a fast and reliable set.
   + [```size_t cet_Capacity(cet_t *p)```](#size_t-cet_capacitycet_t-p)
   + [```size_t cet_Length(cet_t *p)```](#size_t-cet_lengthcet_t-p)
   + [```const void* cet_Contains(cet_t *p, const void *element)```](#const-void-cet_containscet_t-p-const-void-element)
-  + [```void* cet_Insert(cet_t *p, const void *element)```](#void-cet_insertcet_t-p-const-void-element)
+  + [```const void* cet_Insert(cet_t *p, const void *element)```](#const-void-cet_insertcet_t-p-const-void-element)
   + [```void cet_Remove(cet_t *p, const void *element)```](#void-cet_removecet_t-p-const-void-element)
   + [```const void* cet_Iterate(cet_t *p, const void *element)```](#const-void-cet_iteratecet_t-p-const-void-element)
 - Generic (can hold any kind of data)
-- Lightweight (less than 175 lines of source code)
+- Lightweight (less than 200 lines of source code)
 - Performant (Robin Hood hashing dynamically rearranges elements)
 - Portable (only uses the C standard library)
   + ```limits.h```
@@ -114,8 +114,12 @@ void charaterCount(const char *string) {
     cet_t *m = cet_Create(1024, sizeof(pair), pairHash, pairCompare);
     while(*string) {
         pair k = {*string, 0};
-        pair *p = cet_Insert(m, &k);
-        p->value++;
+        const pair *v = cet_Contains(m, &k);
+        if(v != 0) {
+                k.value = v->value;
+        }
+        k.value++;
+        cet_Insert(m, &k);
         string++;
     }
     const pair *i = 0;
@@ -189,12 +193,13 @@ Otherwise, returns NULL (not in set).
 - ```p``` set returned by cet_Create. Non null value.
 - ```element``` element to lookup. Non null value.
 ---
-### ```void* cet_Insert(cet_t *p, const void *element)```
-Inserts the ```element``` into the set if the ```element``` is not present.  
+### ```const void* cet_Insert(cet_t *p, const void *element)```
+Inserts the ```element``` into the set if the ```element``` is not present.
+Updates the element in the set with ```element``` if the ```element``` is present.  
 Returns NULL if the insert fails (set is too full).  
 Otherwise, returns a pointer to the element within the set.  
 - ```p``` set returned by cet_Create. Non null value.
-- ```element``` element to insert. Non null value.
+- ```element``` element to insert or update. Non null value.
 ---
 ### ```void cet_Remove(cet_t *p, const void *element)```
 Removes the element from set if the ```element``` is present.  

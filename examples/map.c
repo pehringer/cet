@@ -18,8 +18,12 @@ void charaterCount(const char *string) {
     cet_t *m = cet_Create(1024, sizeof(pair), pairHash, pairCompare);
     while(*string) {
         pair k = {*string, 0};
-        pair *p = cet_Insert(m, &k);
-        p->value++;
+        const pair *v = cet_Contains(m, &k);
+        if(v != 0) {
+		k.value = v->value;
+	}
+	k.value++;
+        cet_Insert(m, &k);
         string++;
     }
     const pair *i = 0;
