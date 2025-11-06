@@ -169,7 +169,7 @@ rm ./map.bin
 # Library Functions
 ---
 ### ```cet_t* cet_Create(size_t capacity, size_t size, size_t (*hash)(const void*), int (*compare)(const void*, const void*))```
-Returns the allocated set with specified capacity and element size.
+Returns a allocated set with the specified capacity and element size.
 Returns null if the allocation failed.
 - ```capacity``` number of elements in the set. Non zero value.
 - ```size``` size of each element. Non zero value.
